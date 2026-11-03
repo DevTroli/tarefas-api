@@ -1,0 +1,89 @@
+{
+  "info": {
+    "name": "Tarefas API",
+    "description": "Fluxo completo do CRUD de tarefas. Rode com o Collection Runner, na ordem.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Criar tarefa",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{baseUrl}}/tarefas", "host": ["{{baseUrl}}"], "path": ["tarefas"] },
+        "body": { "mode": "raw", "raw": "{\"descricao\":\"Estudar Spring Boot\",\"concluida\":false,\"prioridade\":3}" }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));", "pm.collectionVariables.set('tarefaId', pm.response.json().id);"] } }]
+    },
+    {
+      "name": "2. Criar tarefa com prioridade 6 (400)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{baseUrl}}/tarefas", "host": ["{{baseUrl}}"], "path": ["tarefas"] },
+        "body": { "mode": "raw", "raw": "{\"descricao\":\"Prioridade invalida\",\"prioridade\":6}" }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 400', () => pm.response.to.have.status(400));"] } }]
+    },
+    {
+      "name": "3. Criar tarefa sem descricao (400)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{baseUrl}}/tarefas", "host": ["{{baseUrl}}"], "path": ["tarefas"] },
+        "body": { "mode": "raw", "raw": "{\"descricao\":\"\",\"prioridade\":2}" }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 400', () => pm.response.to.have.status(400));"] } }]
+    },
+    {
+      "name": "4. Listar tarefas",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/tarefas", "host": ["{{baseUrl}}"], "path": ["tarefas"] }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+    },
+    {
+      "name": "5. Buscar tarefa por id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/tarefas/{{tarefaId}}", "host": ["{{baseUrl}}"], "path": ["tarefas", "{{tarefaId}}"] }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+    },
+    {
+      "name": "6. Atualizar tarefa (concluir)",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{baseUrl}}/tarefas/{{tarefaId}}", "host": ["{{baseUrl}}"], "path": ["tarefas", "{{tarefaId}}"] },
+        "body": { "mode": "raw", "raw": "{\"descricao\":\"Estudar Spring Boot\",\"concluida\":true,\"prioridade\":5}" }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+    },
+    {
+      "name": "7. Deletar tarefa",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/tarefas/{{tarefaId}}", "host": ["{{baseUrl}}"], "path": ["tarefas", "{{tarefaId}}"] }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 204', () => pm.response.to.have.status(204));"] } }]
+    },
+    {
+      "name": "8. Buscar tarefa deletada (404)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/tarefas/{{tarefaId}}", "host": ["{{baseUrl}}"], "path": ["tarefas", "{{tarefaId}}"] }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 404', () => pm.response.to.have.status(404));"] } }]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "tarefaId", "value": "" }
+  ]
+}
