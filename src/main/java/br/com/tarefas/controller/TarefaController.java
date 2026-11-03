@@ -2,6 +2,8 @@ package br.com.tarefas.controller;
 
 import br.com.tarefas.model.Tarefa;
 import br.com.tarefas.repository.TarefaRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -20,6 +22,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("/tarefas")
+@Tag(name = "Tarefas", description = "Cadastro, consulta, atualizacao e remocao de tarefas")
 public class TarefaController {
 
     private final TarefaRepository repository;
@@ -28,16 +31,19 @@ public class TarefaController {
         this.repository = repository;
     }
 
+    @Operation(summary = "Lista todas as tarefas")
     @GetMapping
     public List<Tarefa> listar() {
         return repository.findAll();
     }
 
+    @Operation(summary = "Busca uma tarefa pelo id")
     @GetMapping("/{id}")
     public Tarefa buscarPorId(@PathVariable Long id) {
         return repository.findById(id).orElseThrow(() -> tarefaNaoEncontrada(id));
     }
 
+    @Operation(summary = "Cadastra uma nova tarefa", description = "Retorna 400 se a descricao estiver vazia ou se a prioridade nao estiver entre 1 e 5.")
     @PostMapping
     public ResponseEntity<Tarefa> criar(@Valid @RequestBody Tarefa tarefa) {
         tarefa.setId(null);
@@ -50,6 +56,7 @@ public class TarefaController {
         return ResponseEntity.created(location).body(salva);
     }
 
+    @Operation(summary = "Atualiza uma tarefa existente", description = "Retorna 404 se a tarefa nao existir e 400 se os dados forem invalidos.")
     @PutMapping("/{id}")
     public Tarefa atualizar(@PathVariable Long id, @Valid @RequestBody Tarefa dados) {
         Tarefa tarefa = repository.findById(id).orElseThrow(() -> tarefaNaoEncontrada(id));
@@ -60,6 +67,7 @@ public class TarefaController {
         return repository.save(tarefa);
     }
 
+    @Operation(summary = "Remove uma tarefa")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         if (!repository.existsById(id)) {
